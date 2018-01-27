@@ -28,18 +28,19 @@ def create_app(config_name):
 
         #for template folder when runned as a package
         if getattr(sys, 'frozen', False):
-            template_folder = os.path.join(os.getcwd(), 'templates')
-            static_folder = os.path.join(os.getcwd(), 'static')
+            template_folder = os.path.join(os.getcwd(), 'dist/run/templates')
+            static_folder = os.path.join(os.getcwd(), 'dist/run/static')
             print(template_folder, static_folder)
             app = Flask(__name__,
                         template_folder=template_folder,
                         static_folder=static_folder)
         else:
+            print(sys.path[0])
             app = Flask(__name__)
-    app.config.from_object(app_config['development'])
+        app.config.from_object(app_config['development'])
     app.register_blueprint(home)
     """
-    will youse a kv sesssion to store session data in client side
+    will use a kv sesssion to store session data in client side
 
     """
     store = RedisStore(redis.StrictRedis())

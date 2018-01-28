@@ -1,19 +1,168 @@
-<h2> hello, choisissez les fichiers </h2>
-<form id="upload_form" enctype="multipart/form-data" method="post">
-  <input type="file" name="bom" id="bom" onchange="uploadFile(bom)"><br>
-  <input type="file" name="ressources" id="ressources" onchange="uploadFile(ressources)"><br>
-  <input type="file" name="interoperation" id="interoperation" onchange="uploadFile(interoperation)"><br>
-  <input type="file" name="excluded" id="excluded" onchange="uploadFile(excluded)"><br>
-  <input type="file" name="product" id="product" onchange="uploadFile(product)"><br>
-  <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
-  <h3 id="status"></h3>
-  <p id="loaded_n_total"></p>
+<html lang="en" >
+<style type="text/css">
 
-</form>
+    .progress {
+  width: 100%;
+  height: 20px;
+}
+
+.progress-wrap {
+  background: #00a651;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+}
+.progress-wrap .progress-bar {
+  background: #ddd;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+body{
+  font-family: arial;
+  font-size: 15px;
+  line-height: 1.6em;
+}
+
+li {
+  list-style: none;
+}
+
+a{
+  text-decoration: none;
+}
+
+.container {
+  width: 60%;
+  margin: 0 auto;
+  overflow: auto;
+}
+
+header {
+  border-bottom: 3px solid #00a651;
+  color: #00a651;
+}
+
+footer{
+  border-top: 3px solid #00a651;
+  text-align: center;
+  padding-top: 5px;
+}
+
+main {
+  padding-bottom: 20px;
+}
+
+a.start{
+  display: inline-block;
+  color: #666;
+  background: #f4f4f4;
+  border: 1px dotted #ccc;
+  padding: 6px 13px;
+}
+
+input[type='text']{
+  width: 97%;
+  padding: 4px;
+  border-radius: 5px;
+  border: 1px #ccc solid;
+}
+
+input[type='number']{
+  width: 50px;
+  padding: 4px;
+  border-radius: 5px;
+  border: 1px #ccc solid;
+}
+
+label {
+  display: inline-block;
+  width: 180px;
+}
+.current{
+  padding: 10px;
+  background: #f4f4f4;
+  border: #ccc dotted 1px;
+  margin: 20px 0 10px 0;
+}
+
+button {
+  color: #fff;
+  background: #00a651;
+  border: 1px dotted #ccc;
+  padding: 6px 13px;
+}
+
+@media only screen and (max-width:960px ) {
+  .container{
+    width: 80%;
+  }
+
+}
+
+
+</style>
+<head>
+  <meta charset="UTF-8">
+  <title>BOO Tool </title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Calculateur BOO et PRI </h1>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+        <h2>Choissez les fichiers </h2>
+
+        <form id="upload_form" enctype="multipart/form-data" method="post">
+            <p>
+            <label> Fichier 1 Receipe :</label>
+            <input type="file" name="bom" id="bom" onchange="uploadFile(bom)">
+            </p>
+
+            <p>
+            <label>Fichier 2 Ressources :</label>
+            <input type="file" name="ressources" id="ressources" onchange="uploadFile(ressources)"><br>
+            </p>
+            <p>
+                <label> Fichier 3 Interoperations :</label>
+            <input type="file" name="interoperation" id="interoperation" onchange="uploadFile(interoperation)">
+            </p>
+            <p>
+                <label>Fichier 4  Produit à eclure: </label>
+            <input type="file" name="excluded" id="excluded" onchange="uploadFile(excluded)">
+            </p>
+            <p>
+                <label>Fichier 5 Product :</label>
+                <input type="file" name="product" id="product" onchange="uploadFile(product)"><br>
+            </p>
+        </form>
+        <!-- Change the below data attribute to play -->
+        <div class="progress-wrap progress" data-progress-percent="25">
+        <progress value="0" max="100" class="progress-bar progress" id="progressBar">
+        </progress>
+        </div>
+        <!--end-->
+        </div>
+        <h3 id="status"></h3>
+        <p id="loaded_n_total"></p>
+    </main>
+    <footer>
+        <div class="container">
+            Copyright &copy; 2018, Powered by SCOPEx
+        </div>
+    </footer>
+
+   <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+</body>
+
+</html>
+
 <script type="text/javascript">
-
-
-
 function _(el) {
   return document.getElementById(el);
 }

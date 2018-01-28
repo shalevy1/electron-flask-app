@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import pandas as pd
 from flask import render_template, Blueprint, request, redirect, url_for
@@ -58,14 +60,14 @@ def upload_bom():
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['components_data'], session['operation_data'], session['base_material'], session['components_with_sub'] = read_bom_file(path)
-                    return 'sucess'
+                    return 'Bom Telecharger avec sucess'
                 except Exception :
                     return 'Erreur choisissez un fichier correct'
             elif name == 'ressources':
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['ressources_data'] = read_ressources_data(path)
-                    return 'sucess'
+                    return 'les ressources charger avec sucess'
                 except Exception as error:
                     print(error)
                     return 'Erreur choisissez un fichier correct'
@@ -73,7 +75,7 @@ def upload_bom():
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['interopeartion_time'] = read_inter_operartions(path)
-                    return 'sucess'
+                    return 'les interoperations charger avec sucess'
                 except Exception as error:
                     print(error)
                     return 'Erreur choisissez un fichier correct'
@@ -81,7 +83,7 @@ def upload_bom():
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['excluded_products'] = read_excluded_product(path)
-                    return 'sucess'
+                    return 'les fichiers à exclure chargées avec succes , charger les produits pour debuter avec les calculs'
                 except Exception as e:
                     print(e)
                     return 'Erreur choisissez un fichier correct'
@@ -151,9 +153,8 @@ def do_calculations():
                     FULL_BOM_FOLDER)
                 mass_df = mass_df.append(hours_df)
         mass_df.to_csv(path_or_buf=FULL_BOM_FOLDER+"mass_calculation.csv")
-        return "sucess"
+        return "Les calculs se sont teminées avec sucess , veuillez verifier les fichier generés "
     except Exception as e:
-        raise e
         print(e)
-        return 'erreur survenu'
+        return 'erreur survenu, verifier si les fichier ont été bien chargés '
 

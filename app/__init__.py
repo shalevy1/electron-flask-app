@@ -1,9 +1,9 @@
 import redis, os, sys
 from flask import Flask
 from flask_kvsession import KVSessionExtension
-from simplekv.memory.redisstore import RedisStore
+from simplekv.fs import FilesystemStore
 from  config import app_config
-from app.views import home
+from app.views import home, SESSION_FOLDER
 
 # Initialize the app
 
@@ -41,7 +41,7 @@ def create_app(config_name):
     will use a kv sesssion to store session data in client side
 
     """
-    store = RedisStore(redis.StrictRedis())
+    store = FilesystemStore(SESSION_FOLDER)
     KVSessionExtension(store, app)
 
     return app

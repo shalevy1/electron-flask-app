@@ -31,9 +31,11 @@ def get_bom_folder():
 FULL_BOM_FOLDER = get_bom_folder()
 UPLOAD_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS', 'files')
 BOM_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS', 'bom_files')
+SESSION_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS', 'sessions')
 #create the directory
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(BOM_FOLDER,  exist_ok=True)
+os.makedirs(BOM_FOLDER, exist_ok=True)
+os.makedirs(SESSION_FOLDER, exist_ok=True)
 def allowed_file(filename):
     """
     check if a file name is in alowwed filename"""

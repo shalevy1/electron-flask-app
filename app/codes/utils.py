@@ -242,12 +242,11 @@ def get_operation_sequence(name, inter_operation_time):
 
             else:
                 operations.append([[current_op], [next_op]])
-            if not deleted:
-                delays.append((delay, unit)) #need to be improved
+                if not deleted :
+                    delays.append((delay, unit)) #get the delay only if the operation sequence is diffrent with SS
             current_op = next_op
-    operations = [op[-1]  for op in operations]
-    #need to consider only the last operation in the operation list
-    operations = reduce(operator.concat, operations)
+    operations = [op[-1]  for op in operations]#need to consider only the last operation in the operation list
+    operations = [op[-1]  for op in operations] #get only the last
     return zip_longest(operations, delays)
 
 

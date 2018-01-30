@@ -28,12 +28,10 @@ def create_app(config_name):
 
         #for template folder when runned as a package
         if getattr(sys, 'frozen', False):
-            template_folder = os.path.join(os.getcwd(), 'dist/run/templates')
-            static_folder = os.path.join(os.getcwd(), 'dist/run/static')
-            print(template_folder, static_folder)
+            template_folder = os.path.join(sys._MEIPASS, 'templates')
+            print(template_folder)
             app = Flask(__name__,
-                        template_folder=template_folder,
-                        static_folder=static_folder)
+                        template_folder=template_folder)
         else:
             print(sys.path[0])
             app = Flask(__name__)

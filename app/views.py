@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys, platform
 import pandas as pd
 from flask import render_template, Blueprint, request, redirect, url_for
 from flask import send_from_directory, flash, session
@@ -11,9 +11,29 @@ from .codes.utils import get_operation_sequence,get_sub_component_base_quatities
 
 home = Blueprint('home', __name__, template_folder='templates')
 ALLOWED_EXTENSIONS = set(['csv', 'xlsx',])
-UPLOAD_FOLDER = 'files/'
-BOM_FOLDER = 'bom_files/'
-FULL_BOM_FOLDER = os.path.join(os.getcwd(), BOM_FOLDER)
+
+
+
+def get_bom_folder():
+#get my document folder for windows otherswise
+    if platform.system() == 'Windows' :
+        import ctypes.wintypes
+        CSIDL_PERSONAL = 5       # My Documents
+        SHGFP_TYPE_CURRENT = 0   # Get current, not default value
+        buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+        ctypes.windll.shell32.SHGetFolderPathW(None, CSIDL_PERSONAL, None, SHGFP_TYPE_CURRENT, buf)
+        return  buf.value
+    else:
+        if getattr(sys, 'frozen', False):
+            return sys._MEIPASS
+        else:
+            return os.getcwd()
+FULL_BOM_FOLDER = get_bom_folder()
+UPLOAD_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS', 'files')
+BOM_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS', 'bom_files')
+#create the directory
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(BOM_FOLDER,  exist_ok=True)
 def allowed_file(filename):
     """
     check if a file name is in alowwed filename"""
@@ -26,9 +46,12 @@ def save_file(filename, file_data):
     """
     filename = filename
     ext = file_data.filename.rsplit('.', 1)[1].lower()
-    full_path = os.path.join(os.getcwd(), UPLOAD_FOLDER+filename+'.'+ext)
-    file_data.save(full_path)
-    return full_path
+    full_path = os.path.join(UPLOAD_FOLDER, filename+'.'+ext)
+    try:
+        file_data.save(full_path)
+        return full_path
+    except Exception as e:
+        raise e
 @home.route('/')
 def index():
     """
@@ -142,7 +165,7 @@ def do_calculations():
                     batch_size,
                     components_data,
                     base_material,
-                    FULL_BOM_FOLDER
+                    BOM_FOLDER
                     )
                 hours_df, boo_df = get_max_time(
                     results,
@@ -150,9 +173,9 @@ def do_calculations():
                     operation_data,
                     component_with_interoperation,
                     inter_operation_time,
-                    FULL_BOM_FOLDER)
+                    BOM_FOLDER)
                 mass_df = mass_df.append(hours_df)
-        mass_df.to_csv(path_or_buf=FULL_BOM_FOLDER+"mass_calculation.csv")
+        mass_df.to_csv(path_or_buf=os.path.join(BOM_FOLDER, "mass_calculation.csv"))
         return "Les calculs se sont teminées avec sucess , veuillez verifier les fichier generés "
     except Exception as e:
         print(e)

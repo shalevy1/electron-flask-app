@@ -154,7 +154,9 @@ def build_bom(results, batch_size, components_data, base_material, folder):
                     final_result.append(element_dict)
         results[index]['required_quantity'] = sub_required_quantity
     output_df = pd.DataFrame(final_result)
-    output_df.to_csv(path_or_buf= os.path.join(folder, "BOM{}_{}.csv".format(root_product, batch_size)))
+    writer = pd.ExcelWriter(os.path.join(folder, "BOM{}_{}.xlsx".format(root_product, batch_size)))
+    output_df.to_excel(writer,'Sheet1')
+    writer.save()
     return output_df
 
 
@@ -251,8 +253,6 @@ def get_operation_sequence(name, inter_operation_time):
 
 
 
-
-
 def build_boo(product, level, required_quantity, operation_data, component_with_interoperation, inter_operation_time):
     """
     """
@@ -324,12 +324,16 @@ def get_max_time(results, excluded_products, operation_data, component_with_inte
                     inter_operation_time))
     if not boo_df.empty:
         boo_df = boo_df.assign(total_days=boo_df.delay + boo_df.days)
-        boo_df.to_csv(path_or_buf=os.path.join(folder, "BOO_{}.csv".format(root_product)))
+        writer = pd.ExcelWriter(os.path.join(folder, "BOO_{}.xlsx".format(root_product)))
+        boo_df.to_excel(writer, 'Sheet1')
+        writer.save()
         #this will return the maximun hours per level of a given product
         hours_df = boo_df[['total_days', 'component', 'level']]
         hours_df = hours_df.sort_values(['total_days', 'component'],
                                         ascending=[False, True]).groupby('level').first()
-    hours_df.to_csv(path_or_buf=os.path.join(folder, "hours_{}.csv".format(root_product)))
+    writer = pd.ExcelWriter(os.path.join(folder, "hours_{}.xlsx".format(root_product)))
+    hours_df.to_excel(writer, 'Sheet1')
+    writer.save()
     hours_df.reset_index(inplace=True)
     hours_df_flatten = hours_df.stack().to_frame().T
     hours_df_flatten = hours_df_flatten.assign(TOTAl_DAYS=np.sum(hours_df.total_days))

@@ -15,7 +15,13 @@ ALLOWED_EXTENSIONS = set(['csv', 'xlsx',])
 
 
 def get_bom_folder():
-#get my document folder for windows otherswise
+    """
+    the following method return the folder were the files will be saved
+    on windows it return my documents
+    if the app is runned as a web app it will return the working directory
+    else :
+    the working directory in frozen mode
+    """
     if platform.system() == 'Windows' :
         import ctypes.wintypes
         CSIDL_PERSONAL = 5       # My Documents
@@ -36,11 +42,13 @@ SESSION_FOLDER = os.path.join(FULL_BOM_FOLDER, 'PLT_TOOLS_FILES', 'sessions')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BOM_FOLDER, exist_ok=True)
 os.makedirs(SESSION_FOLDER, exist_ok=True)
+
 def allowed_file(filename):
     """
     check if a file name is in alowwed filename"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def save_file(filename, file_data):
     """
     save a file with a name according to his category
@@ -77,7 +85,7 @@ def upload_bom():
         bom_file = request.files['file']
         name = request.form.get('category', '')
         if bom_file.filename == '':
-            return "aucun  fichier selectioner"
+            return "Aucun  fichier selectioner"
         if bom_file and allowed_file(bom_file.filename):
             #save file according to his category
             #if BOOM save as bom , if product save as product etc
@@ -85,30 +93,30 @@ def upload_bom():
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['components_data'], session['operation_data'], session['base_material'], session['components_with_sub'] = read_bom_file(path)
-                    return 'Bom Telecharger avec sucess'
+                    return 'le fichier recipe a été chargé avec succès'
                 except Exception :
-                    return 'Erreur choisissez un fichier correct'
+                    return 'une erreur s\'est produite , veuillez choisir un fichier correct'
             elif name == 'ressources':
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['ressources_data'] = read_ressources_data(path)
-                    return 'les ressources charger avec sucess'
+                    return 'les ressources ont été chargé avec succès'
                 except Exception as error:
                     print(error)
-                    return 'Erreur choisissez un fichier correct'
+                    return 'une erreur s\'est produite , veuillez choisir un fichier correct'
             elif name == 'interoperation':
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['interopeartion_time'] = read_inter_operartions(path)
-                    return 'les interoperations charger avec sucess'
+                    return 'les delais d\'interoperations ont été chargé  avec succès'
                 except Exception as error:
                     print(error)
-                    return 'Erreur choisissez un fichier correct'
+                    return 'une erreur s\'est produite , veuillez choisir un fichier correct'
             elif name == 'excluded':
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['excluded_products'] = read_excluded_product(path)
-                    return 'les fichiers à exclure chargées avec succes , charger les produits pour debuter avec les calculs'
+                    return 'les fichiers à exclure ont été chargé avec succès , charger les produits pour débuter avec les calculs'
                 except Exception as e:
                     print(e)
                     return 'Erreur choisissez un fichier correct'
@@ -119,14 +127,14 @@ def upload_bom():
                     return redirect(url_for('home.do_calculations'))
                 except Exception as e:
                     print(e)
-                    return 'Erreur choisissez un fichier correct'
+                    return 'une erreur s\'est produite , veuillez choisir un fichier correct'
             else:
                 pass
             #path_name = send_from_directory(UPLOAD_FOLDER, filename)
             #return redirect(url_for('home.read_dataset', path=filename))
-            return 'sucess'
+            return 'succès'
         else:
-            return 'choisissez un fichier correct'
+            return 'une erreur s\'est produite , veuillez choisir un fichier correct'
     return render_template("index.html")
 
 
@@ -177,8 +185,10 @@ def do_calculations():
                     inter_operation_time,
                     BOM_FOLDER)
                 mass_df = mass_df.append(hours_df)
-        mass_df.to_csv(path_or_buf=os.path.join(BOM_FOLDER, "mass_calculation.csv"))
-        return "Les calculs se sont teminées avec sucess , veuillez verifier les fichier generés "
+        writer = pd.ExcelWriter(os.path.join(BOM_FOLDER, "mass_calculation.xlsx"))
+        mass_df.to_excel(writer, 'Sheet1')
+        writer.save()
+        return "Les calculs se sont teminées avec succès , veuillez verifier les fichier generées "
     except Exception as e:
         print(e)
         return 'erreur survenu, verifier si les fichier ont été bien chargés '

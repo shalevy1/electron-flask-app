@@ -29,11 +29,11 @@ def create_app(config_name):
         #for template folder when runned as a package
         if getattr(sys, 'frozen', False):
             template_folder = os.path.join(sys._MEIPASS, 'templates')
-            print(template_folder)
+            static_folder = os.path.join(sys._MEIPASS, 'static')
             app = Flask(__name__,
-                        template_folder=template_folder)
+                        template_folder=template_folder,
+                        static_folder= static_folder)
         else:
-            print(sys.path[0])
             app = Flask(__name__)
         app.config.from_object(app_config['development'])
     app.register_blueprint(home)

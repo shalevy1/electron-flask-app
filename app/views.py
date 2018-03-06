@@ -116,7 +116,7 @@ def upload_bom():
                 path = save_file(name, file_data=bom_file)
                 try:
                     session['excluded_products'] = read_excluded_product(path)
-                    return 'les fichiers à exclure ont été chargé avec succès , charger les produits pour débuter avec les calculs'
+                    return 'les fichiers à exclure ont été chargés avec succès , charger les produits pour débuter avec les calculs'
                 except Exception as e:
                     print(e)
                     return 'Erreur choisissez un fichier correct'
@@ -188,8 +188,8 @@ def do_calculations():
         writer = pd.ExcelWriter(os.path.join(BOM_FOLDER, "mass_calculation.xlsx"))
         mass_df.to_excel(writer, 'Sheet1')
         writer.save()
-        return "Les calculs se sont teminées avec succès , veuillez verifier les fichier generées "
+        return "Les calculs effectués avec succès, veuillez vérifier les fichiers generés "
     except Exception as e:
         print(e)
-        return 'erreur survenu, verifier si les fichier ont été bien chargés '
+        return 'erreur survenue, vérifier si les fichiers ont été bien chargés '
 

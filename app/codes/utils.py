@@ -189,27 +189,38 @@ def read_ressources_data(path):
 
 
 
-def read_inter_operartions(path):
+def read_inter_operartions(path, french=True):
     """
     this function given interoperation data it should read it
     """
-
-    try:
-        inter_operation_time = pd.read_excel(io=path)
-        inter_operation_time = inter_operation_time.assign(
-            curent_op=inter_operation_time['Task list node']*10,
-            next_op=inter_operation_time['Task list node.1']*10,
-            deleted=inter_operation_time['Deletion indicator'].apply(lambda x: True if x == 'X' else False))
-        inter_operation_time.fillna(value={'Relationship unit':'D'}, inplace=True)
-        inter_operation_time.rename({'Relationship type':'Type de liaison',
-                                     'curent_op': 'Phase prédécesserice',
-                                     'next_op': 'Phase successive',
-                                     'Offset rel.ship' : 'delay',
-                                     'Relationship unit': 'Unité de mesure décallage'}, axis=1, inplace=True)
-        inter_operation_time.set_index('Material', inplace=True)
-        return inter_operation_time
-    except Exception as e:
-        raise e
+    if not french:
+        try:
+            inter_operation_time = pd.read_excel(io=path)
+            inter_operation_time = inter_operation_time.assign(
+                curent_op=inter_operation_time['Task list node']*10,
+                next_op=inter_operation_time['Task list node.1']*10,
+                deleted=inter_operation_time['Deletion indicator'].apply(lambda x: True if x == 'X' else False))
+            inter_operation_time.fillna(value={'Relationship unit':'D'}, inplace=True)
+            inter_operation_time.rename({'Relationship type':'Type de liaison',
+                                         'curent_op': 'Phase prédécesserice',
+                                         'next_op': 'Phase successive',
+                                         'Offset rel.ship' : 'delay',
+                                         'Relationship unit': 'Unité de mesure décallage'}, axis=1, inplace=True)
+            inter_operation_time.set_index('Material', inplace=True)
+            return inter_operation_time
+        except Exception as e:
+            raise e
+    else:
+        try:
+            inter_operation_time = pd.read_excel(io=path)
+            inter_operation_time.rename(
+                {'Code article':'item',
+                 'Décallage (total) ou décallage minimum': 'delay'},
+                axis=1, inplace=True)
+            inter_operation_time.set_index('item', inplace=True)
+            return inter_operation_time
+        except Exception as e:
+            raise e
 
 
 def get_operation_sequence(name, inter_operation_time):
@@ -229,8 +240,8 @@ def get_operation_sequence(name, inter_operation_time):
         links_infos = links_infos[['Phase successive',
                                    'Type de liaison',
                                    'delay',
-                                   'Unité de mesure décallage',
-                                   'deleted']].head(1)
+                                   'Unité de mesure décallage'
+                                   ]].head(1)
         if not links_infos.empty:
             position = links_infos.index[0] +1
             #print(position)
@@ -238,14 +249,12 @@ def get_operation_sequence(name, inter_operation_time):
             delay = links_infos['delay'].values[0]
             unit = links_infos['Unité de mesure décallage'].values[0]
             link_type = links_infos['Type de liaison'].values[0]
-            deleted = links_infos['deleted'].values[0]
+            #deleted = links_infos['deleted'].values[0]
             if link_type == 'SS':
                 operations[-1].extend([[current_op, next_op]]) #to the last one
-
             else:
                 operations.append([[current_op], [next_op]])
-                if not deleted :
-                    delays.append((delay, unit)) #get the delay only if the operation sequence is diffrent with SS
+                delays.append((delay, unit)) #get the delay only if the operation sequence is diffrent with SS
             current_op = next_op
     operations = [op[-1]  for op in operations]#need to consider only the last operation in the operation list
     operations = [op[-1]  for op in operations] #get only the last

@@ -5,7 +5,7 @@
     "start": "electron ."
   },
   "devDependencies": {
-    "electron": "^1.4.1",
+    "electron": "^13.6.6",
     "electron-packager": "^8.5.1",
     "request-promise": "*",
     "electron-prebuilt": "*"
